@@ -96,6 +96,25 @@ int main()
 		printShema(shema, sost, alfabethEx, alfabethExC);
 		goto dobavitstroku;
 	}
+	if (answer("Хотите сохранить машину Тьюринга [y/n]? ")=='y') {
+		printf("Введите имя файла для сохранеия (существующий файл будет перезаписан): ");
+		char filename[100];
+		fgets(filename, sizeof(filename)-5, stdin);
+		for(int i=0; i<strlen(filename); i++) {
+			if(filename[i]==' ' || filename[i]=='\n') {
+				filename[i]='\0';
+				break;
+			}
+		}
+		strcat(filename, ".sxe");
+		//printf("%s\n", filename);
+		FILE * fn = fopen(filename, "w");
+		if (fn) {
+			saveShema(shema, sost, alfabethEx, alfabethExC, fn);
+		} else {
+			printf("Файл  %s не удалось создать или открыть\n", filename); 
+		}
+	}
 	List* lenta=createList();
 	add_item_to_begin(lenta, '@');
 	printf("Введите начальное слово(без символов пустого символа в начале и конце: ");

@@ -1,3 +1,4 @@
+#include <stdio.h>
 typedef struct List2d3 {
      char** data;
      int count;
@@ -41,6 +42,24 @@ List2d3* getLing(List2d3* list, int n) {
         i++;
     }
     return tmp;   // NULL, если n больше длины
+}
+int saveShema(List2d3* shema, List* sost, char* alfavit, int count, FILE* fn) {
+	fprintf(fn, "THIS IS SXEMA\n");
+	fprintf(fn, "|qqq|");
+	for (int i = 0; i<count; i++) {
+		fprintf(fn, "%c  |", alfavit[i]);
+	}
+	Node* current = sost->head;
+	int c=0;
+	while (current) {
+		fprintf(fn, "\n|q%c |", current->data);
+		List2d3* tmp=getLing(shema, c);
+		for(int i=0; i<shema->count; i++){
+			fprintf(fn, "%c%c%c|", tmp->data[i][0], tmp->data[i][1], tmp->data[i][2]);
+		}
+		c++;
+		current=current->next;
+	}
 }
 int printShema(List2d3* shema, List* sost, char* alfavit, int count) {
 	printf("\n|qqq|");
