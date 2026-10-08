@@ -45,6 +45,7 @@ List2d3* getLing(List2d3* list, int n) {
 }
 int saveShema(List2d3* shema, List* sost, char* alfavit, int count, FILE* fn) {
 	fprintf(fn, "THIS IS SXEMA\n");
+	fprintf(fn, "%d\n", count);
 	fprintf(fn, "|qqq|");
 	for (int i = 0; i<count; i++) {
 		fprintf(fn, "%c  |", alfavit[i]);

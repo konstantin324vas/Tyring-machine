@@ -5,83 +5,156 @@
 
 int main()
 {
-    int alfabethExC;
-	//printf("Что вы хотите сделать?\n\t1 - Создать новую машину Тьюринга\n\t2 - Загрузить существующую машину Тьюринга\n\t3 - Сгенерировать машину Тьюринга\n");
-	printf("Введите внешний алфавит (все символы (кроме символа пустой ячейки @) без пробелов и запятых: ");
-	char buffer[5000];
-	fgets(buffer, sizeof(buffer), stdin);
-
-	// убираем перевод строки, если он есть
-	size_t len = strlen(buffer);
-	if (len > 0 && buffer[len - 1] == '\n') {
-		buffer[len - 1] = '\0';
-		len--;
-	}
-	
-
-	alfabethExC = len + 1;              // +1 под '@'
-	char alfabethEx[alfabethExC+1];
-	alfabethEx[0] = '@';
-	for (int i = 1; i < alfabethExC; i++) {
-		alfabethEx[i] = buffer[i - 1];
-	}
-	alfabethEx[alfabethExC] = '\0';
-	List* sost=createList();
-	List2d3* shema = createList2d3(alfabethExC); 
-	int c=0;
+	char option;
+	int alfabethExC;
+	nachalo:
 	do {
-		printShema(shema, sost, alfabethEx, alfabethExC);
-		char cod=inputChar();
-		if (cod == '\0') {
-    printf("Состояние не введено, попробуйте снова\n");
-    continue;
-}
-		if(find_itemNum(sost,cod)!=-1) {
-			printf("\nНельзя создавать состояния с одинаковыми кодами\n");
-			continue;
-		}
-		add_item_to_end(sost,cod);
-		for (int i = 0; i < alfabethExC; i++) {
-    printShema(shema, sost, alfabethEx, alfabethExC);
+		printf("Что вы хотите сделать?\n\t1 - Создать новую машину Тьюринга\n\t2 - Загрузить существующую машину Тьюринга\n\t3 - Сгенерировать машину Тьюринга\n");
+		option= inputChar();
+	} while(option!='1' &&  option!='2' &&  option!='3');
+	char buffer[5000];
+	FILE* fn1;
+	switch(option) {
+		case '1':
+			printf("Введите внешний алфавит (все символы (кроме символа пустой ячейки @) без пробелов и запятых: ");
+			fgets(buffer, sizeof(buffer), stdin);
+			// убираем перевод строки, если он есть
+			size_t len = strlen(buffer);
+			if (len > 0 && buffer[len - 1] == '\n') {
+				buffer[len - 1] = '\0';
+				len--;
+			}
+			alfabethExC = len + 1;              // +1 под '@'
+		break;
+		case '2':
+			char filename[100];
+			printf("Введите имя файла со схемой: ");
+			fgets(filename, sizeof(filename), stdin);
+			fn1= fopen(filename, "r");
+			if(fn) {
+				fgets(buffer, sizeof(buffer), fn1);
+				if(strcmp(buffer, "THIS IS SXEMA\n")==0) {
+					fgets(buffer, sizeof(buffer), fn1);
+					alfabethExC=atoi(buffer);
+					if (alfabethExC==0) {
+						printf("Количество символов внешнего алфавита, не может быть 0, вероятно файл %s порченый\n", filename);
+						fclose(fn1);
+						goto nachalo;
+					}
+				} else {
+					printf("Файл %s не содержит сигнатуру файла схемы\n");
+					fclose(fn1);
+					goto nachalo;
+				}
+			} else {
+				printf("Файл %s не удалось открыть\n", filename);
+				goto nachalo;
+			}
+		break;
+		case '3':
+			
+		break;
+	}
+	char alfabethEx[alfabethExC+1];
+	int c=0;
+	List* sost=createList();
+	List2d3* shema = createList2d3(alfabethExC);
+	switch(options) {
+		case '1':
+			alfabethEx[0] = '@';
+			for (int i = 1; i < alfabethExC; i++) {
+				alfabethEx[i] = buffer[i - 1];
+			}
+			alfabethEx[alfabethExC] = '\0';
+			do {
+				printShema(shema, sost, alfabethEx, alfabethExC);
+				char cod=inputChar();
+				if (cod == '\0') {
+    					printf("Состояние не введено, попробуйте снова\n");
+    					continue;
+				}
+				if(find_itemNum(sost,cod)!=-1) {
+					printf("\nНельзя создавать состояния с одинаковыми кодами\n");
+					continue;
+				}
+				add_item_to_end(sost,cod);
+				for (int i = 0; i < alfabethExC; i++) {
+    					printShema(shema, sost, alfabethEx, alfabethExC);
+    					char* str = inputComand();
+    					if (str == NULL) {
+        					i--;
+        					printf("\nКоманда должна состоять из 3 символов\n");
+        					continue;
+    					}
 
-    char* str = inputComand();
-    if (str == NULL) {
-        i--;
-        printf("\nКоманда должна состоять из 3 символов\n");
-        continue;
-    }
+    					char* proverka = "LlRrSs";
 
-    char* proverka = "LlRrSs";
+    					if (strchr(alfabethEx, str[0]) == NULL) {
+        					free(str);
+        					i--;
+        					printf("\nСимвол '%c' не входит во внешний алфавит\n", str[0]);
+        					continue;
+    					}
+    					if (strchr(proverka, str[1]) == NULL) {
+        					free(str);
+        					i--;
+        					printf("\nДвижение '%c' недопустимо (LlRrSsЛлПпНн)\n", str[1]);
+        					continue;
+    					}
 
-    if (strchr(alfabethEx, str[0]) == NULL) {
-        free(str);
-        i--;
-        printf("\nСимвол '%c' не входит во внешний алфавит\n", str[0]);
-        continue;
-    }
-    if (strchr(proverka, str[1]) == NULL) {
-        free(str);
-        i--;
-        printf("\nДвижение '%c' недопустимо (LlRrSsЛлПпНн)\n", str[1]);
-        continue;
-    }
+    					List2d3* tmp = getLing(shema, c);
+    					if (tmp == NULL) {
+        					free(str);
+        					printf("\nВнутренняя ошибка: строка %d не найдена\n", c);
+        					break;
+    					}
 
-    List2d3* tmp = getLing(shema, c);
-    if (tmp == NULL) {
-        free(str);
-        printf("\nВнутренняя ошибка: строка %d не найдена\n", c);
-        break;
-    }
-
-    tmp->data[i][0] = str[0];
-    tmp->data[i][1] = str[1];
-    tmp->data[i][2] = str[2];
-    free(str);
-}
-		addList(shema);
-		c++;
-		dobavitstroku:
-	} while(answer("Еще одна строка [y/n]? ")=='y');
+    					tmp->data[i][0] = str[0];
+    					tmp->data[i][1] = str[1];
+    					tmp->data[i][2] = str[2];
+    					free(str);
+				}
+				addList(shema);
+				c++;
+				dobavitstroku:
+			} while(answer("Еще одна строка [y/n]? ")=='y');
+		break;
+		case '2':
+			int g=0;
+			fgets(buffer, sizeof(buffer), fn1);
+			for(int i; i<strlen(buffer); i++){
+				printf("%c", buffer[i]);
+				if((i-6)%5==0) {
+					alfabethEx[g]=buffer[i];
+					g++
+				}
+			}
+			alfabethEx[alfabethExC]='\0';
+			while(fgets(buffer, sizeof(buffer), fn1)) {
+				add_item_to_end(sost, buffer[2]);
+				List2d3* tmp=getLing(shema,c);
+				g=0;
+				for(int i; i<strlen(buffer); i++){
+					printf("%c",buffer[i]);
+					if((i-6)%5==0) {
+						tmp->data[g][0]=buffer[i];
+						tmp->data[g][1]=buffer[i+1];
+						tmp->data[g][2]=buffer[i+2];
+						g++;
+					}
+				}
+				c++;
+				addList(shema);
+			}
+			fclose(fn1);
+			if(answer("Хотите отредактировать схему [y/n]? ")=='y') {
+				goto dobavitstroku;
+			}
+		break;
+		case '3':
+			
+		break;
+	}
 	vtoroyraz:
 	if (answer("Хотите удалить какую либо строку [y/n]? ")=='y') {
 		printf("Введите код состочния строку котрого хотите удалить: ");
@@ -96,6 +169,7 @@ int main()
 		printShema(shema, sost, alfabethEx, alfabethExC);
 		goto dobavitstroku;
 	}
+	save:
 	if (answer("Хотите сохранить машину Тьюринга [y/n]? ")=='y') {
 		printf("Введите имя файла для сохранеия (существующий файл будет перезаписан): ");
 		char filename[100];
@@ -111,8 +185,11 @@ int main()
 		FILE * fn = fopen(filename, "w");
 		if (fn) {
 			saveShema(shema, sost, alfabethEx, alfabethExC, fn);
+			fclose(fn);
+			printf("Схема записана в файл %s\n", filename);
 		} else {
 			printf("Файл  %s не удалось создать или открыть\n", filename); 
+			goto save;
 		}
 	}
 	List* lenta=createList();
