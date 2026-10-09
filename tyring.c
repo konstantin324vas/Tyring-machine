@@ -160,9 +160,9 @@ int main()
 		case '2':
 			int g=0;
 			fgets(buffer, sizeof(buffer), fn1);
-			for(int i; i<strlen(buffer); i++){
+			for(int i=0; i<strlen(buffer); i++){
 				printf("%c", buffer[i]);
-				if((i-5)%5==0) {
+				if(i>0 && buffer[i-1]=='|' && buffer[i]!='\n' && buffer[i+1]!='q') {
 					alfabethEx[g]=buffer[i];
 					g++;
 				}
@@ -172,12 +172,14 @@ int main()
 				add_item_to_end(sost, buffer[2]);
 				List2d3* tmp=getLing(shema,c);
 				g=0;
-				for(int i; i<strlen(buffer); i++){
+				for(int i=0; i<strlen(buffer); i++){
 					printf("%c",buffer[i]);
-					if((i-5)%5==0) {
-						tmp->data[g][0]=buffer[i];
-						tmp->data[g][1]=buffer[i+1];
-						tmp->data[g][2]=buffer[i+2];
+					char* prof= "LlRrSs";
+
+					if(strchr(prof, buffer[i])!=NULL) {
+						tmp->data[g][0]=buffer[i-1];
+						tmp->data[g][1]=buffer[i];
+						tmp->data[g][2]=buffer[i+1];
 						g++;
 					}
 				}
@@ -185,6 +187,7 @@ int main()
 				addList(shema);
 			}
 			fclose(fn1);
+			printf("\n");
 			if(answer("Хотите отредактировать схему [y/n]? ")=='y') {
 				goto dobavitstroku;
 			}
