@@ -118,6 +118,43 @@ int main()
 				c++;
 				dobavitstroku:
 			} while(answer("Еще одна строка [y/n]? ")=='y');
+			vtoroyraz:
+			if (answer("Хотите удалить какую либо строку [y/n]? ")=='y') {
+				printf("Введите код состочния строку котрого хотите удалить: ");
+				char rmCod = inputChar();
+				int codN = find_itemNum(sost, rmCod);
+				if(codN==-1) {
+					printf("Нет такого состочния\n");
+					goto vtoroyraz;
+				}
+				subListIn(&shema,codN);
+				delete_item(sost, find_item(sost, rmCod));
+				printShema(shema, sost, alfabethEx, alfabethExC);
+				goto dobavitstroku;
+		}
+			save:
+			if (answer("Хотите сохранить машину Тьюринга [y/n]? ")=='y') {
+				printf("Введите имя файла для сохранеия (существующий файл будет перезаписан): ");
+				char filename[100];
+				fgets(filename, sizeof(filename)-5, stdin);
+				for(int i=0; i<strlen(filename); i++) {
+					if(filename[i]==' ' || filename[i]=='\n') {
+						filename[i]='\0';
+						break;
+					}
+				}
+				strcat(filename, ".sxe");
+				//printf("%s\n", filename);
+				FILE * fn = fopen(filename, "w");
+				if (fn) {
+					saveShema(shema, sost, alfabethEx, alfabethExC, fn);
+					fclose(fn);
+					printf("Схема записана в файл %s\n", filename);
+				} else {
+					printf("Файл  %s не удалось создать или открыть\n", filename); 
+					goto save;
+				}
+			}
 		break;
 		case '2':
 			int g=0;
@@ -154,43 +191,6 @@ int main()
 		case '3':
 			
 		break;
-	}
-	vtoroyraz:
-	if (answer("Хотите удалить какую либо строку [y/n]? ")=='y') {
-		printf("Введите код состочния строку котрого хотите удалить: ");
-		char rmCod = inputChar();
-		int codN = find_itemNum(sost, rmCod);
-		if(codN==-1) {
-			printf("Нет такого состочния\n");
-			goto vtoroyraz;
-		}
-		subListIn(&shema,codN);
-		delete_item(sost, find_item(sost, rmCod));
-		printShema(shema, sost, alfabethEx, alfabethExC);
-		goto dobavitstroku;
-	}
-	save:
-	if (answer("Хотите сохранить машину Тьюринга [y/n]? ")=='y') {
-		printf("Введите имя файла для сохранеия (существующий файл будет перезаписан): ");
-		char filename[100];
-		fgets(filename, sizeof(filename)-5, stdin);
-		for(int i=0; i<strlen(filename); i++) {
-			if(filename[i]==' ' || filename[i]=='\n') {
-				filename[i]='\0';
-				break;
-			}
-		}
-		strcat(filename, ".sxe");
-		//printf("%s\n", filename);
-		FILE * fn = fopen(filename, "w");
-		if (fn) {
-			saveShema(shema, sost, alfabethEx, alfabethExC, fn);
-			fclose(fn);
-			printf("Схема записана в файл %s\n", filename);
-		} else {
-			printf("Файл  %s не удалось создать или открыть\n", filename); 
-			goto save;
-		}
 	}
 	List* lenta=createList();
 	add_item_to_begin(lenta, '@');
