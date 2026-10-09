@@ -30,8 +30,9 @@ int main()
 			char filename[100];
 			printf("Введите имя файла со схемой: ");
 			fgets(filename, sizeof(filename), stdin);
+			filename[strlen(filename)-1]='\0';
 			fn1= fopen(filename, "r");
-			if(fn) {
+			if(fn1) {
 				fgets(buffer, sizeof(buffer), fn1);
 				if(strcmp(buffer, "THIS IS SXEMA\n")==0) {
 					fgets(buffer, sizeof(buffer), fn1);
@@ -59,7 +60,7 @@ int main()
 	int c=0;
 	List* sost=createList();
 	List2d3* shema = createList2d3(alfabethExC);
-	switch(options) {
+	switch(option) {
 		case '1':
 			alfabethEx[0] = '@';
 			for (int i = 1; i < alfabethExC; i++) {
@@ -161,9 +162,9 @@ int main()
 			fgets(buffer, sizeof(buffer), fn1);
 			for(int i; i<strlen(buffer); i++){
 				printf("%c", buffer[i]);
-				if((i-6)%5==0) {
+				if((i-5)%5==0) {
 					alfabethEx[g]=buffer[i];
-					g++
+					g++;
 				}
 			}
 			alfabethEx[alfabethExC]='\0';
@@ -173,7 +174,7 @@ int main()
 				g=0;
 				for(int i; i<strlen(buffer); i++){
 					printf("%c",buffer[i]);
-					if((i-6)%5==0) {
+					if((i-5)%5==0) {
 						tmp->data[g][0]=buffer[i];
 						tmp->data[g][1]=buffer[i+1];
 						tmp->data[g][2]=buffer[i+2];
