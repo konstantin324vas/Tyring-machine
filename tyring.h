@@ -437,3 +437,8 @@ char* inputComand() {
     return com;
 }
 
+typedef struct Vyrazhenia {
+	int mnozhitel;
+	int slogaemoe;
+	struct Vyrazhenia* link;
+} Vyrazhenia;
