@@ -1,4 +1,247 @@
 #include <stdio.h>
+// ---------- Структуры ----------
+
+typedef struct IntNode {
+    int data;
+    struct IntNode* prev;
+    struct IntNode* next;
+} IntNode;
+
+typedef struct IntList {
+    IntNode* head;
+    IntNode* tail;
+} IntList;
+
+
+// ---------- Создание ----------
+
+IntList* createIntList() {
+    IntList* list = (IntList*) malloc(sizeof(IntList));
+    list->head = NULL;
+    list->tail = NULL;
+    return list;
+}
+
+
+// ---------- Добавление ----------
+
+int add_int_to_end(IntList* list, int item) {
+    if (list == NULL) return -1;
+
+    IntNode* newNode = (IntNode*) malloc(sizeof(IntNode));
+    if (newNode == NULL) return -2;
+
+    newNode->prev = newNode->next = NULL;
+    newNode->data = item;
+
+    if (list->tail) {
+        list->tail->next = newNode;
+        newNode->prev = list->tail;
+        list->tail = newNode;
+    } else {
+        list->head = list->tail = newNode;
+    }
+    return 0;
+}
+
+int add_int_to_begin(IntList* list, int item) {
+    if (list == NULL) return -1;
+
+    IntNode* newNode = (IntNode*) malloc(sizeof(IntNode));
+    if (newNode == NULL) return -2;
+
+    newNode->prev = newNode->next = NULL;
+    newNode->data = item;
+
+    if (list->head) {
+        list->head->prev = newNode;
+        newNode->next = list->head;
+        list->head = newNode;
+    } else {
+        list->head = list->tail = newNode;
+    }
+    return 0;
+}
+
+
+// ---------- Удаление ----------
+
+int delete_int_item(IntList* list, IntNode* node) {
+    if (node == NULL) return -1;
+    if (list == NULL) return -2;
+
+    if (node->prev) node->prev->next = node->next;
+    else            list->head = node->next;
+
+    if (node->next) node->next->prev = node->prev;
+    else            list->tail = node->prev;
+
+    free(node);
+    return 0;
+}
+
+int delete_int_first(IntList* list) {
+    if (list == NULL) return -1;
+    if (list->head == NULL) return -2;
+
+    IntNode* target = list->head;
+    list->head = target->next;
+
+    if (list->head != NULL) list->head->prev = NULL;
+    else                    list->tail = NULL;
+
+    free(target);
+    return 0;
+}
+
+int delete_int_last(IntList* list) {
+    if (list == NULL) return -1;
+    if (list->tail == NULL) return -2;
+
+    IntNode* target = list->tail;
+    list->tail = target->prev;
+
+    if (list->tail != NULL) list->tail->next = NULL;
+    else                    list->head = NULL;
+
+    free(target);
+    return 0;
+}
+
+int delete_int_by_value(IntList* list, int item) {
+    if (list == NULL) return -1;
+
+    IntNode* current = list->head;
+    while (current != NULL) {
+        if (current->data == item) {
+            return delete_int_item(list, current);
+        }
+        current = current->next;
+    }
+    return -2;
+}
+
+int delete_int_at(IntList* list, int index) {
+    if (list == NULL || index < 0) return -1;
+
+    IntNode* current = list->head;
+    int i = 0;
+    while (current != NULL && i != index) {
+        current = current->next;
+        i++;
+    }
+    if (current == NULL) return -2;
+    return delete_int_item(list, current);
+}
+
+
+// ---------- Доступ ----------
+
+int lengIntList(IntList* list) {
+    IntNode* current = list->head;
+    int i = 0;
+    while (current) {
+        i++;
+        current = current->next;
+    }
+    return i;
+}
+
+int getIntItem(IntList* list, int n) {
+    IntNode* current = list->head;
+    int i = 0;
+    while (current) {
+        if (i == n) return current->data;
+        current = current->next;
+        i++;
+    }
+    return 0;   // или любое «дефолтное» значение, если n вне границ
+}
+
+IntNode* getIntItemLink(IntList* list, int n) {
+    IntNode* current = list->head;
+    int i = 0;
+    while (current) {
+        if (i == n) return current;
+        current = current->next;
+        i++;
+    }
+    return NULL;
+}
+
+int find_int_itemNum(IntList* list, int item) {
+    IntNode* current = list->head;
+    int i = 0;
+    while (current) {
+        if (current->data == item) return i;
+        current = current->next;
+        i++;
+    }
+    return -1;
+}
+
+IntNode* find_int_item(IntList* list, int item) {
+    IntNode* current = list->head;
+    while (current) {
+        if (current->data == item) return current;
+        current = current->next;
+    }
+    return NULL;
+}
+
+
+// ---------- Очистка ----------
+
+void freeIntList(IntList* list) {
+    if (list == NULL) return;
+
+    IntNode* current = list->head;
+    while (current != NULL) {
+        IntNode* next = current->next;
+        free(current);
+        current = next;
+    }
+    list->head = NULL;
+    list->tail = NULL;
+}
+
+void freeIntListAndSelf(IntList* list) {
+    if (list == NULL) return;
+
+    IntNode* current = list->head;
+    while (current != NULL) {
+        IntNode* next = current->next;
+        free(current);
+        current = next;
+    }
+    free(list);
+}
+
+
+// ---------- Преобразование в массив (аналог convertList) ----------
+
+int* convertIntList(IntList* list) {
+    int len = lengIntList(list);
+    int* arr = (int*) malloc(len * sizeof(int));
+    IntNode* current = list->head;
+    for (int i = 0; i < len; i++) {
+        arr[i] = current->data;
+        current = current->next;
+    }
+    return arr;
+}
+
+
+// ---------- Печать (для отладки) ----------
+
+void printIntList(IntList* list) {
+    IntNode* current = list->head;
+    while (current) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
 typedef struct List2d3 {
      char** data;
      int count;
