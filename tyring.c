@@ -58,7 +58,7 @@ int main()
 	}
 	char alfabethEx[alfabethExC+1];
 	int c=0;
-	List* sost=createList();
+	List* sost=createIntList();
 	List2d3* shema = createList2d3(alfabethExC);
 	switch(option) {
 		case '1':
@@ -69,20 +69,26 @@ int main()
 			alfabethEx[alfabethExC] = '\0';
 			do {
 				printShema(shema, sost, alfabethEx, alfabethExC);
-				char cod=inputChar();
-				if (cod == '\0') {
+				int cod=-1;
+				fgets(buffer, sizeof(buffer), stdin);
+				sscanf(buffer, "%d\n", &cod);
+				if (cod == -1) {
     					printf("Состояние не введено, попробуйте снова\n");
     					continue;
 				}
-				if(find_itemNum(sost,cod)!=-1) {
+				if(find_int_itemNum(sost,cod)!=-1) {
 					printf("\nНельзя создавать состояния с одинаковыми кодами\n");
 					continue;
 				}
-				add_item_to_end(sost,cod);
+				add_int_to_end(sost,cod);
 				for (int i = 0; i < alfabethExC; i++) {
     					printShema(shema, sost, alfabethEx, alfabethExC);
-    					char* str = inputComand();
-    					if (str == NULL) {
+    					char simbol='\0';
+					char move='\0';
+					int cod=-1;
+					fgets(buffer, sizeof(buffer), stdin);
+					sscanf(buffer, "%c%c%d\n", &simbol, &move, &cod);
+    					if (simbol=='\0' || move=='\0' || cod==-1) {
         					i--;
         					printf("\nКоманда должна состоять из 3 символов\n");
         					continue;
@@ -90,30 +96,26 @@ int main()
 
     					char* proverka = "LlRrSs";
 
-    					if (strchr(alfabethEx, str[0]) == NULL) {
-        					free(str);
+    					if (strchr(alfabethEx, simbol) == NULL) {
         					i--;
-        					printf("\nСимвол '%c' не входит во внешний алфавит\n", str[0]);
+        					printf("\nСимвол '%c' не входит во внешний алфавит\n", simbol);
         					continue;
     					}
-    					if (strchr(proverka, str[1]) == NULL) {
-        					free(str);
+    					if (strchr(proverka, move) == NULL) {
         					i--;
-        					printf("\nДвижение '%c' недопустимо (LlRrSsЛлПпНн)\n", str[1]);
+        					printf("\nДвижение '%c' недопустимо (LlRrSsЛлПпНн)\n", move);
         					continue;
     					}
 
     					List2d3* tmp = getLing(shema, c);
     					if (tmp == NULL) {
-        					free(str);
         					printf("\nВнутренняя ошибка: строка %d не найдена\n", c);
         					break;
     					}
 
-    					tmp->data[i][0] = str[0];
-    					tmp->data[i][1] = str[1];
-    					tmp->data[i][2] = str[2];
-    					free(str);
+    					tmp->data[i][0] = simbol;
+    					tmp->data[i][1] = move;
+    					tmp->dataInt[i] = cod;
 				}
 				addList(shema);
 				c++;
@@ -122,14 +124,16 @@ int main()
 			vtoroyraz:
 			if (answer("Хотите удалить какую либо строку [y/n]? ")=='y') {
 				printf("Введите код состочния строку котрого хотите удалить: ");
-				char rmCod = inputChar();
-				int codN = find_itemNum(sost, rmCod);
+				int rmCod = -1;
+				fgets(buffer, sizeof(buffer), stdin);
+				sscanf(buffer, "%d\n", &rmCod);
+				int codN = find_int_itemNum(sost, rmCod);
 				if(codN==-1) {
 					printf("Нет такого состочния\n");
 					goto vtoroyraz;
 				}
 				subListIn(&shema,codN);
-				delete_item(sost, find_item(sost, rmCod));
+				delete_int_item(sost, find_int_item(sost, rmCod));
 				printShema(shema, sost, alfabethEx, alfabethExC);
 				goto dobavitstroku;
 		}
@@ -207,17 +211,21 @@ int main()
 	}
 	add_item_to_end(lenta, '@');
 	qwer:
-	printf("Определите начальное положение и состояние записав его код под одним из символов\n");
+	printf("Определите начальное состояние записав его код: ");
+	fgets(buffer, sizeof(buffer), stdin);
+	int cod=-1;
+	sscanf(buffer, "%d\n", &cod);
 	char* lentaStr=convertList(lenta);
 	printf("%s\n",lentaStr);
 	free(lentaStr);
+	printf("Определите начальное положение записав q под ним\n");
 	fgets(buffer, sizeof(buffer), stdin);
 	int pos = -1;            // позиция в ленте
 	int col = 0;             // текущая колонка
 	for (int i = 0; buffer[i] != '\0' && buffer[i] != '\n'; i++) {
 		if (buffer[i] == ' ') {
 			col++;
-		} else if (find_itemNum(sost,buffer[i])!=-1) {
+		} else if (buffer[i]=='q') {
 			pos = col;
 			break;
 		}
@@ -226,7 +234,7 @@ int main()
 		printf("\nНе найденно состояние с таким кодом\n");
 		goto qwer;
 	}
-	c=find_itemNum(sost, buffer[col]);
+	c=find_int_itemNum(sost, cod);
 	//printf("Позиция = %d, состояние = %c %d\n", pos, buffer[col], c);
 	do {
 		List2d3 * tmp = getLing(shema, c);
@@ -239,10 +247,10 @@ int main()
 		int idx = indexOfChar(alfabethEx,oldSim);
 		if (idx<0) idx=0;
 		sim->data=tmp->data[idx][0];
-		printf("Выполнена команда: %c%c%c\n", tmp->data[idx][0],tmp->data[idx][1],tmp->data[idx][2]);
-		char nextCod=tmp->data[idx][2];
-		if(find_itemNum(sost,nextCod)!=-1) {
-			c=find_itemNum(sost, tmp->data[idx][2]);
+		printf("Выполнена команда: %c%c%d\n", tmp->data[idx][0],tmp->data[idx][1],tmp->dataInt[idx]);
+		int nextCod=tmp->dataInt[idx];
+		if(find_int_itemNum(sost,nextCod)!=-1) {
+			c=find_int_itemNum(sost, tmp->dataInt[idx]);
 		} else {
 			if(pos!=0) {
 		Node* kray1=getItemLink(lenta,0);
@@ -264,7 +272,7 @@ int main()
 		for(int k=0; k<pos; k++) {
 			printf(" ");
 		}
-		printf("%c\n",nextCod);
+		printf("q%d\n", nextCod);
 			break;
 		}
 		char* proverca1 ="Ll";
@@ -304,11 +312,11 @@ int main()
 		for(int k=0; k<pos; k++) {
 			printf(" ");
 		}
-		printf("%c\n",nextCod);
+		printf("q%d\n",nextCod);
 		//rintf("Позиция = %d, состояние = %c %d\n", pos, buffer[col], c);
 	} while(answer("Завершить работу [y/n]? ")=='n');
 	freeListAndSelf(lenta);
-	freeListAndSelf(sost);
+	freeIntListAndSelf(sost);
 	freeList2d3(&shema);
     return 0;
 }

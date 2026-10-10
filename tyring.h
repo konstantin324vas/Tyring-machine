@@ -155,7 +155,7 @@ int getIntItem(IntList* list, int n) {
         current = current->next;
         i++;
     }
-    return 0;   // или любое «дефолтное» значение, если n вне границ
+    return 1;   // или любое «дефолтное» значение, если n вне границ
 }
 
 IntNode* getIntItemLink(IntList* list, int n) {
@@ -244,6 +244,7 @@ void printIntList(IntList* list) {
 }
 typedef struct List2d3 {
      char** data;
+     int* dataInt;
      int count;
      struct List2d3* link;
 } List2d3;
@@ -269,11 +270,12 @@ List2d3* createList2d3(int count) {
     newList->link=NULL;
     newList->data= (char**) malloc(count*sizeof(char *));
     for(int i=0; i<count; i++) {
-        newList->data[i]=(char*) malloc(3*sizeof(char));
-        for(int j=0; j<3; j++) {
+        newList->data[i]=(char*) malloc(2*sizeof(char));
+        for(int j=0; j<2; j++) {
 			newList->data[i][j]='\0';
 		}
     }
+	newList->dataInt= (int*) malloc(sizeof(int)*count);
     newList->count=count;
     return newList;
 }
@@ -286,7 +288,7 @@ List2d3* getLing(List2d3* list, int n) {
     }
     return tmp;   // NULL, если n больше длины
 }
-int saveShema(List2d3* shema, List* sost, char* alfavit, int count, FILE* fn) {
+int saveShema(List2d3* shema, IntList* sost, char* alfavit, int count, FILE* fn) {
 	fprintf(fn, "THIS IS SXEMA\n");
 	fprintf(fn, "%d\n", count);
 	fprintf(fn, "|qqq|");
@@ -296,16 +298,16 @@ int saveShema(List2d3* shema, List* sost, char* alfavit, int count, FILE* fn) {
 	Node* current = sost->head;
 	int c=0;
 	while (current) {
-		fprintf(fn, "\n|q%c |", current->data);
+		fprintf(fn, "\n|q%d |", current->data);
 		List2d3* tmp=getLing(shema, c);
 		for(int i=0; i<shema->count; i++){
-			fprintf(fn, "%c%c%c|", tmp->data[i][0], tmp->data[i][1], tmp->data[i][2]);
+			fprintf(fn, "%c%c%d|", tmp->data[i][0], tmp->data[i][1], tmp->dataInt[i]);
 		}
 		c++;
 		current=current->next;
 	}
 }
-int printShema(List2d3* shema, List* sost, char* alfavit, int count) {
+int printShema(List2d3* shema, IntList* sost, char* alfavit, int count) {
 	printf("\n|qqq|");
 	for (int i = 0; i < count; i++) {
 		printf("%c  |", alfavit[i]);
@@ -316,15 +318,15 @@ int printShema(List2d3* shema, List* sost, char* alfavit, int count) {
 	while (current)
 	{
 		List2d3* tmp=getLing(shema, c);
-		printf("%c |", current->data);
+		printf("%d |", current->data);
 		for(int i=0; i<shema->count; i++) {
 			if(tmp->data[i][0]=='\0') {
 				return 0;
 			}
-			for(int j=0; j<3; j++) {
+			for(int j=0; j<2; j++) {
 				printf("%c", tmp->data[i][j]);
 			}
-			printf("|");
+			printf("%d|", tmp->dataInt[i]);
 		}
 		c++;
 		current = current->next;
@@ -360,6 +362,7 @@ int subList(List2d3** headRef) {
 
     for (int i = 0; i < last->count; i++) free(last->data[i]);
     free(last->data);
+	free(last->dataInt);
     free(last);
 
     return 0;
@@ -391,6 +394,7 @@ int subListIn(List2d3** headRef, int n) {
 
     for (int i = 0; i < target->count; i++) free(target->data[i]);
     free(target->data);
+	free(target->dataInt);
     free(target);
 
     return 0;
@@ -408,6 +412,7 @@ void freeList2d3(List2d3** headRef) {
                 free(current->data[i]);
             }
             free(current->data);
+		free(current->dataInt);
         }
         free(current);
 
