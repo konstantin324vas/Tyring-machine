@@ -685,6 +685,58 @@ char* inputComand() {
     return com;
 }
 
+char** splitString(const char* str, char delim, int* outCount) {
+    *outCount = 0;
+    if (str == NULL) return NULL;
+
+    // 1. Находим первое и последнее вхождение разделителя
+    const char* first = strchr(str, delim);
+    if (first == NULL) return NULL;              // разделителя нет вообще
+
+    const char* last = strrchr(str, delim);
+    if (last == first) return NULL;              // только один разделитель — нечего делить
+
+    // 2. Идём между first+1 и last, считая разделители
+    const char* p = first + 1;
+    int count = 1;                               // минимум одна подстрока между first и last
+    while (p < last) {
+        if (*p == delim) count++;
+        p++;
+    }
+
+    // 3. Выделяем массив указателей
+    char** parts = (char**) malloc(count * sizeof(char*));
+    if (parts == NULL) return NULL;
+
+    // 4. Заполняем подстроки
+    int idx = 0;
+    p = first + 1;
+    const char* start = p;
+    while (p <= last) {
+        if (p == last || *p == delim) {
+            int len = (int)(p - start);
+            parts[idx] = (char*) malloc((len + 1) * sizeof(char));
+            for (int i = 0; i < len; i++) {
+                parts[idx][i] = start[i];
+            }
+            parts[idx][len] = '\0';
+            idx++;
+            start = p + 1;
+        }
+        p++;
+    }
+
+    *outCount = count;
+    return parts;
+}
+void freeSplit(char** parts, int count) {
+    if (parts == NULL) return;
+    for (int i = 0; i < count; i++) {
+        free(parts[i]);
+    }
+    free(parts);
+}
+
 typedef struct Vyrazhenia {
 	int mnozhitel;
 	int slogaemoe;
