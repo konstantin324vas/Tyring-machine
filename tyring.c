@@ -140,6 +140,7 @@ int main()
 		}
 			save:
 			if (answer("Хотите сохранить машину Тьюринга [y/n]? ")=='y') {
+				save1:
 				printf("Введите имя файла для сохранеия (существующий файл будет перезаписан): ");
 				char filename[100];
 				fgets(filename, sizeof(filename)-5, stdin);
@@ -243,6 +244,7 @@ int main()
 						enqueVyrazh(q, getMnozhitelAt(q,i), rez/10;
 					}
 				}
+				printShema(shema, sost, alfabethEx, alfabethExC);
 				for(int j=0; j<10; j++) {
 					int rez= j*getMnozhitelAt(q,i)+getMnozhitelAt(q,i);
 					char str[2];
@@ -253,8 +255,16 @@ int main()
 					if(findQueueVyrazhBySlogaemoe(q,rez/10)==NULL) {
 						enqueueVyrazh(q,getMnozhitelAt(q,i), rez/10);
 					}
+					printShema(shema, sost, alfabethEx, alfabethExC);
 				}
 				addList(shema);
+			}
+			freeQueueVyrazhAndSelf(q);
+			if(answer("Хотите отредактировать схему [y/n]? ")=='y') {
+				goto dobavitstroku;
+            }
+			if(answer("Хотите сохранить схему [y/n]? ")=='y') {
+				goto save1;
 			}
 		break;
 	}
