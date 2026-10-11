@@ -69,10 +69,10 @@ int main()
 			alfabethEx[alfabethExC] = '\0';
 			do {
 				printShema(shema, sost, alfabethEx, alfabethExC);
-				int cod=-1;
+				int cod=-2;
 				fgets(buffer, sizeof(buffer), stdin);
 				sscanf(buffer, "%d\n", &cod);
-				if (cod == -1) {
+				if (cod == -2) {
     					printf("Состояние не введено, попробуйте снова\n");
     					continue;
 				}
@@ -85,10 +85,10 @@ int main()
     					printShema(shema, sost, alfabethEx, alfabethExC);
     					char simbol='\0';
 					char move='\0';
-					int cod=-1;
+					int cod=-2;
 					fgets(buffer, sizeof(buffer), stdin);
 					sscanf(buffer, "%c%c%d\n", &simbol, &move, &cod);
-    					if (simbol=='\0' || move=='\0' || cod==-1) {
+    					if (simbol=='\0' || move=='\0' || cod==-2) {
         					i--;
         					printf("\nКоманда должна состоять из 3 символов\n");
         					continue;
@@ -124,7 +124,7 @@ int main()
 			vtoroyraz:
 			if (answer("Хотите удалить какую либо строку [y/n]? ")=='y') {
 				printf("Введите код состочния строку котрого хотите удалить: ");
-				int rmCod = -1;
+				int rmCod = -2;
 				fgets(buffer, sizeof(buffer), stdin);
 				sscanf(buffer, "%d\n", &rmCod);
 				int codN = find_int_itemNum(sost, rmCod);
@@ -164,29 +164,45 @@ int main()
 		case '2':
 			int g=0;
 			fgets(buffer, sizeof(buffer), fn1);
-			for(int i=0; i<strlen(buffer); i++){
-				printf("%c", buffer[i]);
-				if(i>0 && buffer[i-1]=='|' && buffer[i]!='\n' && buffer[i+1]!='q') {
-					alfabethEx[g]=buffer[i];
-					g++;
+			printf("%s", buffer);
+			char** yacheyki = splitString(buffer, '|', &g);
+			for(int i=1; i<g; i++) {
+				alfabethEx[g-1]='\0';
+				char simbol;
+				sscanf(yacheyki[i], "%c  ", &simbol);
+				alfabethEx[i-1]=simbol;
+				if(alfabethEx[i-1]=='\0') {
+					printf("Файл поврежден\n");
+					fclose(fn1);
+					//вставь сюда очиску памяти как в конце программы
+					goto nachalo;
 				}
 			}
+			freeSplit(yacheyki, g);
 			alfabethEx[alfabethExC]='\0';
+			c=0;
 			while(fgets(buffer, sizeof(buffer), fn1)) {
-				add_item_to_end(sost, buffer[2]);
-				List2d3* tmp=getLing(shema,c);
+				printf("%s", buffer);
 				g=0;
-				for(int i=0; i<strlen(buffer); i++){
-					printf("%c",buffer[i]);
+				yacheyki = splitString(buffer, '|', &g);
+				int cod;
+				sscanf(yacheyki[0], "q%d ", &cod);
+				add_int_to_end(sost, cod);
+				List2d3* tmp=getLing(shema,c);
+				for(int i=1; i<g; i++) {
 					char* prof= "LlRrSs";
-
-					if(strchr(prof, buffer[i])!=NULL) {
-						tmp->data[g][0]=buffer[i-1];
-						tmp->data[g][1]=buffer[i];
-						tmp->data[g][2]=buffer[i+1];
-						g++;
-					}
+					char simbol='\0';
+					char move='\0';
+					cod=-2;
+					sscanf(yacheyki[i], "%c%c%d", &simbol, &move, &cod);
+					if(strchr(alfabethEx, simbol)==NULL || strchr(prof, move)==NULL || cod==-2) {
+						//повтори код для поврежденого файла
+					} else {
+						tmp->data[g-1][0]=simbol;
+						tmp->data[g-1][1]= move;
+						tmp->dataInt[g-1]=cod;}
 				}
+				freeSplit(yacheyki, g);
 				c++;
 				addList(shema);
 			}
