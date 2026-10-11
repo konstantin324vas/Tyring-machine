@@ -166,11 +166,8 @@ int main()
 			fgets(buffer, sizeof(buffer), fn1);
 			printf("%s", buffer);
 			char** yacheyki = splitString(buffer, '|', &g);
-			printf("[DEBUG] g = %d, yacheyki = %p\n", g, (void*)yacheyki);
-if (yacheyki == NULL) { printf("splitString вернул NULL\n"); goto nachalo; }
-for (int k = 0; k < g; k++) printf("[DEBUG] yacheyki[%d] = '%s'\n", k, yacheyki[k]);
 			for(int i=1; i<g; i++) {
-				alfabethEx[g-1]='\0';
+				alfabethEx[i-1]='\0';
 				char simbol;
 				sscanf(yacheyki[i], "%c  ", &simbol);
 				alfabethEx[i-1]=simbol;
@@ -202,9 +199,9 @@ for (int k = 0; k < g; k++) printf("[DEBUG] yacheyki[%d] = '%s'\n", k, yacheyki[
 					fclose(fn1);
 					goto end;
 					} else {
-						tmp->data[g-1][0]=simbol;
-						tmp->data[g-1][1]= move;
-						tmp->dataInt[g-1]=cod;}
+						tmp->data[i-1][0]=simbol;
+						tmp->data[i-1][1]= move;
+						tmp->dataInt[i-1]=cod;}
 				}
 				freeSplit(yacheyki, g);
 				c++;
@@ -324,6 +321,15 @@ for (int k = 0; k < g; k++) printf("[DEBUG] yacheyki[%d] = '%s'\n", k, yacheyki[
 		if(kray2->data=='@' && kray2->prev->data=='@') {
 			deleteLast(lenta);
 		}
+	}
+	Node* kray=getItemLink(lenta,0);
+	if(kray->data!='@') {
+		add_item_to_begin(lenta, '@');
+		pos++;
+	}
+	kray=getItemLink(lenta, lengList(lenta)-1);
+	if(kray->data!='@') {
+		add_item_to_begin(lenta, '@');
 	}
 		printf("Новое стотояние машины\n");
 		lentaStr=convertList(lenta);
