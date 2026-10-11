@@ -53,7 +53,8 @@ int main()
 			}
 		break;
 		case '3':
-			
+			printf("создан стандартный алфавит: @0123456789\n");
+			alfanethExC=11;
 		break;
 	}
 	char alfabethEx[alfabethExC+1];
@@ -214,6 +215,14 @@ int main()
 			}
 		break;
 		case '3':
+			strcpy(alfabethEx, "@0123456789");
+			int mnozitel=-1;
+			int slogaemoe=-1;
+			do {
+				printf("Ведите выражение вида n*b+c (b и с  положителбные целые числа): ");
+				fgets(buffer, sizeof(buffer), stdin);
+				sscanf(buffer, "n*%d+%d", &mnozitel, &slogaemoe);
+			} while(mnozitel<0 || slogaemoe<0);
 			
 		break;
 	}
