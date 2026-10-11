@@ -737,8 +737,228 @@ void freeSplit(char** parts, int count) {
     free(parts);
 }
 
+// ============================================================
+// Vyrazhenia (односвязный узел)
+// ============================================================
+
 typedef struct Vyrazhenia {
-	int mnozhitel;
-	int slogaemoe;
-	struct Vyrazhenia* link;
+    int mnozhitel;
+    int slogaemoe;
+    struct Vyrazhenia* link;
 } Vyrazhenia;
+
+// ============================================================
+// QueueVyrazh (очередь на основе односвязного списка)
+// ============================================================
+
+typedef struct QueueVyrazh {
+    Vyrazhenia* head;   // извлекаем отсюда
+    Vyrazhenia* tail;   // добавляем сюда
+    int size;
+} QueueVyrazh;
+
+// ---------- Геторы для полей Vyrazhenia ----------
+
+int getMnozhitel(Vyrazhenia* v) {
+    if (v == NULL) return 0;
+    return v->mnozhitel;
+}
+
+int getSlogaemoe(Vyrazhenia* v) {
+    if (v == NULL) return 0;
+    return v->slogaemoe;
+}
+
+Vyrazhenia* getLink(Vyrazhenia* v) {
+    if (v == NULL) return NULL;
+    return v->link;
+}
+
+// ---------- Создание ----------
+
+QueueVyrazh* createQueueVyrazh() {
+    QueueVyrazh* q = (QueueVyrazh*) malloc(sizeof(QueueVyrazh));
+    q->head = NULL;
+    q->tail = NULL;
+    q->size = 0;
+    return q;
+}
+
+// ---------- Проверки ----------
+
+int isEmptyQueueVyrazh(QueueVyrazh* q) {
+    return (q == NULL || q->head == NULL);
+}
+
+int lengQueueVyrazh(QueueVyrazh* q) {
+    if (q == NULL) return 0;
+    return q->size;
+}
+
+Vyrazhenia* getHeadQueueVyrazh(QueueVyrazh* q) {
+    if (q == NULL) return NULL;
+    return q->head;
+}
+
+Vyrazhenia* getTailQueueVyrazh(QueueVyrazh* q) {
+    if (q == NULL) return NULL;
+    return q->tail;
+}
+
+// ---------- Добавление в хвост (enqueue) ----------
+
+int enqueueVyrazh(QueueVyrazh* q, int mnozhitel, int slogaemoe) {
+    if (q == NULL) return -1;
+
+    Vyrazhenia* node = (Vyrazhenia*) malloc(sizeof(Vyrazhenia));
+    if (node == NULL) return -2;
+
+    node->mnozhitel = mnozhitel;
+    node->slogaemoe = slogaemoe;
+    node->link = NULL;
+
+    if (q->tail == NULL) {
+        q->head = q->tail = node;
+    } else {
+        q->tail->link = node;
+        q->tail = node;
+    }
+    q->size++;
+    return 0;
+}
+
+// ---------- Извлечение из головы (dequeue) ----------
+
+Vyrazhenia* dequeueVyrazh(QueueVyrazh* q) {
+    if (q == NULL || q->head == NULL) return NULL;
+
+    Vyrazhenia* node = q->head;
+    q->head = node->link;
+    if (q->head == NULL) q->tail = NULL;
+    q->size--;
+
+    node->link = NULL;   // отвязать от очереди
+    return node;         // вызывающий освобождает через free()
+}
+
+Vyrazhenia* peekQueueVyrazh(QueueVyrazh* q) {
+    if (q == NULL || q->head == NULL) return NULL;
+    return q->head;
+}
+
+// ---------- Поиск по slogaemoe ----------
+
+Vyrazhenia* findQueueVyrazhBySlogaemoe(QueueVyrazh* q, int slogaemoe) {
+    if (q == NULL) return NULL;
+
+    Vyrazhenia* current = q->head;
+    while (current != NULL) {
+        if (current->slogaemoe == slogaemoe) return current;
+        current = current->link;
+    }
+    return NULL;
+}
+
+int findQueueVyrazhIndexBySlogaemoe(QueueVyrazh* q, int slogaemoe) {
+    if (q == NULL) return -1;
+
+    Vyrazhenia* current = q->head;
+    int i = 0;
+    while (current != NULL) {
+        if (current->slogaemoe == slogaemoe) return i;
+        current = current->link;
+        i++;
+    }
+    return -1;
+}
+
+// ---------- Удаление по slogaemoe ----------
+
+int deleteQueueVyrazhBySlogaemoe(QueueVyrazh* q, int slogaemoe) {
+    if (q == NULL || q->head == NULL) return -1;
+
+    Vyrazhenia* current = q->head;
+    Vyrazhenia* prev = NULL;
+
+    while (current != NULL) {
+        if (current->slogaemoe == slogaemoe) {
+            if (prev == NULL) {
+                q->head = current->link;
+                if (q->head == NULL) q->tail = NULL;
+            } else {
+                prev->link = current->link;
+                if (current == q->tail) q->tail = prev;
+            }
+            free(current);
+            q->size--;
+            return 0;
+        }
+        prev = current;
+        current = current->link;
+    }
+    return -2;
+}
+
+int deleteAllQueueVyrazhBySlogaemoe(QueueVyrazh* q, int slogaemoe) {
+    if (q == NULL || q->head == NULL) return 0;
+
+    int removed = 0;
+    Vyrazhenia* current = q->head;
+    Vyrazhenia* prev = NULL;
+
+    while (current != NULL) {
+        if (current->slogaemoe == slogaemoe) {
+            Vyrazhenia* toFree = current;
+            if (prev == NULL) {
+                q->head = current->link;
+                if (q->head == NULL) q->tail = NULL;
+                current = q->head;
+            } else {
+                prev->link = current->link;
+                if (current == q->tail) q->tail = prev;
+                current = prev->link;
+            }
+            free(toFree);
+            q->size--;
+            removed++;
+        } else {
+            prev = current;
+            current = current->link;
+        }
+    }
+    return removed;
+}
+
+// ---------- Очистка ----------
+
+void freeQueueVyrazh(QueueVyrazh* q) {
+    if (q == NULL) return;
+
+    Vyrazhenia* current = q->head;
+    while (current != NULL) {
+        Vyrazhenia* next = current->link;
+        free(current);
+        current = next;
+    }
+    q->head = NULL;
+    q->tail = NULL;
+    q->size = 0;
+}
+
+void freeQueueVyrazhAndSelf(QueueVyrazh* q) {
+    if (q == NULL) return;
+    freeQueueVyrazh(q);
+    free(q);
+}
+
+// ---------- Печать (для отладки) ----------
+
+void printQueueVyrazh(QueueVyrazh* q) {
+    if (q == NULL) return;
+    Vyrazhenia* current = q->head;
+    while (current != NULL) {
+        printf("[m=%d, s=%d] ", current->mnozhitel, current->slogaemoe);
+        current = current->link;
+    }
+    printf("\n");
+}
