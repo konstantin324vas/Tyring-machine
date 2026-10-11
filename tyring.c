@@ -54,7 +54,7 @@ int main()
 		break;
 		case '3':
 			printf("создан стандартный алфавит: @0123456789\n");
-			alfanethExC=11;
+			alfabethExC=11;
 		break;
 	}
 	char alfabethEx[alfabethExC+1];
@@ -228,7 +228,7 @@ int main()
 			enqueueVyrazh(q, mnozitel, slogaemoe);
 			for(int i=0;  i<lengQueueVyrazh(q); i++) {
 				List2d3* tmp=getLing(shema,i);
-				add_int_to_end(sost, getSlogaemoeAt(q,i);
+				add_int_to_end(sost, getSlogaemoeAt(q,i));
 				int rez= 0*getMnozhitelAt(q,i)+getSlogaemoeAt(q,i);
 				if(rez==0) {
 					tmp->data[0][0]='@';
@@ -241,12 +241,12 @@ int main()
 					tmp->data[0][1]='l';
 					tmp->dataInt[0]=rez/10;
 					if(findQueueVyrazhBySlogaemoe(q,rez/10)==NULL) {
-						enqueVyrazh(q, getMnozhitelAt(q,i), rez/10;
+						enqueueVyrazh(q, getMnozhitelAt(q,i), rez/10);
 					}
 				}
 				printShema(shema, sost, alfabethEx, alfabethExC);
 				for(int j=0; j<10; j++) {
-					int rez= j*getMnozhitelAt(q,i)+getMnozhitelAt(q,i);
+					rez= j*getMnozhitelAt(q,i)+getSlogaemoeAt(q,i);
 					char str[2];
 					sprintf(str, "%d", rez%10);
 					tmp->data[j+1][0]=str[0];
@@ -255,7 +255,7 @@ int main()
 					if(findQueueVyrazhBySlogaemoe(q,rez/10)==NULL) {
 						enqueueVyrazh(q,getMnozhitelAt(q,i), rez/10);
 					}
-					printShema(shema, sost, alfabethEx, alfabethExC);
+					//printShema(shema, sost, alfabethEx, alfabethExC);
 				}
 				addList(shema);
 			}
