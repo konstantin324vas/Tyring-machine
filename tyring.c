@@ -166,6 +166,9 @@ int main()
 			fgets(buffer, sizeof(buffer), fn1);
 			printf("%s", buffer);
 			char** yacheyki = splitString(buffer, '|', &g);
+			printf("[DEBUG] g = %d, yacheyki = %p\n", g, (void*)yacheyki);
+if (yacheyki == NULL) { printf("splitString вернул NULL\n"); goto nachalo; }
+for (int k = 0; k < g; k++) printf("[DEBUG] yacheyki[%d] = '%s'\n", k, yacheyki[k]);
 			for(int i=1; i<g; i++) {
 				alfabethEx[g-1]='\0';
 				char simbol;
@@ -174,8 +177,7 @@ int main()
 				if(alfabethEx[i-1]=='\0') {
 					printf("Файл поврежден\n");
 					fclose(fn1);
-					//вставь сюда очиску памяти как в конце программы
-					goto nachalo;
+					goto end;
 				}
 			}
 			freeSplit(yacheyki, g);
@@ -196,7 +198,9 @@ int main()
 					cod=-2;
 					sscanf(yacheyki[i], "%c%c%d", &simbol, &move, &cod);
 					if(strchr(alfabethEx, simbol)==NULL || strchr(prof, move)==NULL || cod==-2) {
-						//повтори код для поврежденого файла
+						printf("Файл поврежден\n");
+					fclose(fn1);
+					goto end;
 					} else {
 						tmp->data[g-1][0]=simbol;
 						tmp->data[g-1][1]= move;
@@ -332,6 +336,7 @@ int main()
 		//rintf("Позиция = %d, состояние = %c %d\n", pos, buffer[col], c);
 	} while(answer("Завершить работу [y/n]? ")=='n');
 	freeListAndSelf(lenta);
+	end:
 	freeIntListAndSelf(sost);
 	freeList2d3(&shema);
     return 0;
