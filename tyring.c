@@ -289,7 +289,7 @@ int main()
 	}
 	kray=getItemLink(lenta, lengList(lenta)-1);
 	if(kray->data!='@') {
-		add_item_to_begin(lenta, '@');
+		add_item_to_end(lenta, '@');
 	}
 		printf("Машина завершила работу\n");
 		lentaStr=convertList(lenta);
@@ -338,7 +338,7 @@ int main()
 	}
 	kray=getItemLink(lenta, lengList(lenta)-1);
 	if(kray->data!='@') {
-		add_item_to_begin(lenta, '@');
+		add_item_to_end(lenta, '@');
 	}
 		printf("Новое стотояние машины\n");
 		lentaStr=convertList(lenta);
