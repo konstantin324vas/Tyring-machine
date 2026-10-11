@@ -282,6 +282,15 @@ int main()
 			deleteLast(lenta);
 		}
 	}
+			Node* kray=getItemLink(lenta,0);
+	if(kray->data!='@') {
+		add_item_to_begin(lenta, '@');
+		pos++;
+	}
+	kray=getItemLink(lenta, lengList(lenta)-1);
+	if(kray->data!='@') {
+		add_item_to_begin(lenta, '@');
+	}
 		printf("Машина завершила работу\n");
 		lentaStr=convertList(lenta);
 		printf("%s\n",lentaStr);
