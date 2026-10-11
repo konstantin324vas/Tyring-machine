@@ -962,3 +962,26 @@ void printQueueVyrazh(QueueVyrazh* q) {
     }
     printf("\n");
 }
+int getMnozhitelAt(QueueVyrazh* q, int index) {
+    if (q == NULL || index < 0) return -1;
+    Vyrazhenia* current = q->head;
+    int i = 0;
+    while (current != NULL) {
+        if (i == index) return current->mnozhitel;
+        current = current->link;
+        i++;
+    }
+    return -1;   // индекс за границей
+}
+
+int getSlogaemoeAt(QueueVyrazh* q, int index) {
+    if (q == NULL || index < 0) return -1;
+    Vyrazhenia* current = q->head;
+    int i = 0;
+    while (current != NULL) {
+        if (i == index) return current->slogaemoe;
+        current = current->link;
+        i++;
+    }
+    return -1;   // индекс за границей
+}
