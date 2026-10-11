@@ -223,7 +223,25 @@ int main()
 				fgets(buffer, sizeof(buffer), stdin);
 				sscanf(buffer, "n*%d+%d", &mnozitel, &slogaemoe);
 			} while(mnozitel<0 || slogaemoe<0);
-			
+			QueueVyrazh* q = createQueueVyrazh();
+			enqueueVyrazh(q, mnozitel, slogaemoe);
+			for(int i=0;  i<lengQueueVyrazh(q); i++) {
+				List2d3* tmp=getLing(shema,i);
+				add_int_to_end(sost, getSlogaemoe(i);
+				int rez= 0*getMnozhitel(i)+getSlogaemoe(i);
+				if(rez==0) {
+					tmp->data[0][0]='@';
+					tmp->data[0][1]='s';
+					tmp->dataInt[0]=-1;
+				} else {
+					char str[2];
+					sprintf(str, "%d",rez%10);
+					tmp->data[0][0]=str[0];
+					tmp->data[0][1]='l';
+					tmp->dataInt[0]=rez/10;
+					if(findQueueVyrazhBySlogaemoe(q,}
+						
+			}
 		break;
 	}
 	List* lenta=createList();
