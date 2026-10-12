@@ -3,6 +3,9 @@
 #include<string.h>
 #include"tyring.h"
 
+int g;
+char filename[100];
+
 int main()
 {
 	char option;
@@ -27,7 +30,6 @@ int main()
 			alfabethExC = len + 1;              // +1 под '@'
 		break;
 		case '2':
-			char filename[100];
 			printf("Введите имя файла со схемой: ");
 			fgets(filename, sizeof(filename), stdin);
 			filename[strlen(filename)-1]='\0';
@@ -59,7 +61,7 @@ int main()
 	}
 	char alfabethEx[alfabethExC+1];
 	int c=0;
-	List* sost=createIntList();
+	IntList* sost=createIntList();
 	List2d3* shema = createList2d3(alfabethExC);
 	switch(option) {
 		case '1':
@@ -121,6 +123,8 @@ int main()
 				addList(shema);
 				c++;
 				dobavitstroku:
+				c--;
+				c++;
 			} while(answer("Еще одна строка [y/n]? ")=='y');
 			vtoroyraz:
 			if (answer("Хотите удалить какую либо строку [y/n]? ")=='y') {
@@ -164,7 +168,7 @@ int main()
 			}
 		break;
 		case '2':
-			int g=0;
+			g=0;
 			fgets(buffer, sizeof(buffer), fn1);
 			printf("%s", buffer);
 			char** yacheyki = splitString(buffer, '|', &g);
@@ -244,7 +248,6 @@ int main()
 						enqueueVyrazh(q, getMnozhitelAt(q,i), rez/10);
 					}
 				}
-				printShema(shema, sost, alfabethEx, alfabethExC);
 				for(int j=0; j<10; j++) {
 					rez= j*getMnozhitelAt(q,i)+getSlogaemoeAt(q,i);
 					char str[2];
@@ -260,6 +263,7 @@ int main()
 				addList(shema);
 			}
 			freeQueueVyrazhAndSelf(q);
+			printShema(shema, sost, alfabethEx, alfabethExC);
 			if(answer("Хотите отредактировать схему [y/n]? ")=='y') {
 				goto dobavitstroku;
             }

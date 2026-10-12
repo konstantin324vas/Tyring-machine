@@ -295,7 +295,7 @@ int saveShema(List2d3* shema, IntList* sost, char* alfavit, int count, FILE* fn)
 	for (int i = 0; i<count; i++) {
 		fprintf(fn, "%c  |", alfavit[i]);
 	}
-	Node* current = sost->head;
+	IntNode* current = sost->head;
 	int c=0;
 	while (current) {
 		fprintf(fn, "\n|q%d |", current->data);
@@ -312,7 +312,7 @@ int printShema(List2d3* shema, IntList* sost, char* alfavit, int count) {
 	for (int i = 0; i < count; i++) {
 		printf("%c  |", alfavit[i]);
 	}
-	Node *current = sost->head;
+	IntNode *current = sost->head;
 	int c=0;
 	printf("\n|q");
 	while (current)
@@ -508,12 +508,13 @@ int lengList(List *list) {
 
 char* convertList (List *list) {
 	Node *current = list->head;
+	int len =lengList(list);
 	char* str = (char*) malloc(lengList(list)+1*sizeof(char));
-	for(int i=0; i<lengList(list); i++) {
+	for(int i=0; i<len; i++) {
 		str[i]=current->data;
 		current=current->next;
 	}
-	str[lengList(list)]='\0';
+	str[len]='\0';
 	return str;
 }
 
